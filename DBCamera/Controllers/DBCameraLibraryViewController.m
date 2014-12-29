@@ -91,6 +91,8 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
 
     [self.view addSubview:self.loading];
     [self.view setGestureRecognizers:_pageViewController.gestureRecognizers];
+	
+	[self loadLibraryGroups];
 }
 
 - (void) viewWillAppear:(BOOL)animated
@@ -106,7 +108,6 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
 {
     [super viewDidAppear:animated];
     
-    [self loadLibraryGroups];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:)
                                                  name:UIApplicationDidBecomeActiveNotification object:[UIApplication sharedApplication]];
@@ -338,6 +339,7 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
             metadata[@"DBCameraSource"] = @"Library";
             
             UIImage *image = [UIImage imageForAsset:asset maxPixelSize:_libraryMaxImageSize];
+//            UIImage *image = [self test:asset];
             
             if ( !weakSelf.useCameraSegue ) {
                 if ( [weakSelf.delegate respondsToSelector:@selector(camera:didFinishWithImage:withMetadata:)] )
@@ -359,5 +361,38 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
         } failureBlock:nil];
     });
 }
+
+//- (UIImage *) test:(ALAsset *)asset
+//{
+//    ALAssetRepresentation *representation = asset.defaultRepresentation;
+//    CGImageRef fullResolutionImage = CGImageRetain(representation.fullResolutionImage);
+//    // AdjustmentXMP constains the Extensible Metadata Platform XML of the photo
+//    // This XML describe the transformation done to the image.
+//    // http://en.wikipedia.org/wiki/Extensible_Metadata_Platform
+//    // Have in mind that the key is not exactly documented.
+//    NSString *adjustmentXMP = [representation.metadata objectForKey:@"AdjustmentXMP"];
+//    
+//    NSData *adjustmentXMPData = [adjustmentXMP dataUsingEncoding:NSUTF8StringEncoding];
+//    NSError *__autoreleasing error = nil;
+//    CGRect extend = CGRectZero;
+//    extend.size = representation.dimensions;
+//    NSArray *filters = [CIFilter filterArrayFromSerializedXMP:adjustmentXMPData inputImageExtent:extend error:&error];
+//    if (filters)
+//    {
+//        CIImage *image = [CIImage imageWithCGImage:fullResolutionImage];
+//        CIContext *context = [CIContext contextWithOptions:nil];
+//        for (CIFilter *filter in filters)
+//        {
+//            [filter setValue:image forKey:kCIInputImageKey];
+//            image = [filter outputImage];
+//        }
+//        
+//        fullResolutionImage = [context createCGImage:image fromRect:image.extent];
+//    }
+//    
+//    UIImage *toReturn = [UIImage imageWithCGImage:fullResolutionImage];
+//    CGImageRelease(fullResolutionImage);
+//    return toReturn;
+//}
 
 @end
